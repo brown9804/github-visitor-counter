@@ -1,6 +1,6 @@
 FROM node:20-alpine
 
-WORKDIR /app
+WORKDIR /github/workspace
 
 COPY package.json ./
 RUN npm install
