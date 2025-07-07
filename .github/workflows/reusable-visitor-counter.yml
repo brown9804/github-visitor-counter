@@ -1,5 +1,14 @@
 name: reusable-visitor-counter
 on:
+  schedule:
+    - cron: '0 0,12 * * *' # Runs twice daily
+  workflow_dispatch:        # Allows manual trigger
+  push:
+    branches:
+      - main                # Triggers on push (including PR merge) to main
+  pull_request:
+    branches:
+      - main                # Triggers when a PR targets main
   workflow_call:
     inputs:
       repo:
