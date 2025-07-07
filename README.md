@@ -6,7 +6,7 @@ Costa Rica
 [![GitHub](https://img.shields.io/badge/--181717?logo=github&logoColor=ffffff)](https://github.com/)
 [brown9804](https://github.com/brown9804)
 
-Last updated: 2025-07-07
+Last updated: 2025-05-20
 
 ----------
 
@@ -18,15 +18,18 @@ Last updated: 2025-07-07
 - **Daily-updated** visitor counting (using GitHub Traffic API)
 - SVG badge for easy embedding
 - Open source and customizable
+- **Scalable:** supports a reusable workflow for multi-repo use
+
 
 ## How it works
 
-> [!NOTE]
-> This counter is updated once per day (not real-time) and shows the total number of visits (including repeat visits) as reported by GitHub.
+> [!IMPORTANT]
+>  This counter is updated once per day (not real-time) and shows the total number of visits (including repeat visits) as reported by GitHub.
 
-- A GitHub Action runs `daily to fetch real visitor data from the GitHub Traffic API.`
+- A reusable GitHub Action workflow runs *daily* to fetch real visitor data from the GitHub Traffic API.
 - The action updates `count.json` and regenerates `visitor.svg` **using the total number of visits (including repeat visits)**.
-- The badge is served via GitHub Pages and can be embedded anywhere:
+- The badge is served via GitHub Pages and can be embedded anywhere.
+
 
 ## General Usage
 
@@ -45,42 +48,37 @@ Last updated: 2025-07-07
 
 ## Files structure
 
-- `.github/workflows/update.yml` (GitHub Action for daily update)
-- `generate_svg.js` (fetches data and generates badge)
-- `count.json` (stores the latest count)
-- `visitor.svg` (the badge)
-- `Dockerfile` (containerizes the action for reuse)
-- `action.yml` (defines the GitHub Action interface)
+- .github/workflows/reusable-visitor-counter.yml: `Reusable GitHub Action workflow for updating the badge`
+- generate_svg.js: `Fetches data and generates badge`
+- count.json: `Stores the latest count`
+- visitor.svg: `The badge`
+- Dockerfile: `Containerizes the action for reuse`
+- action.yml: `Defines the GitHub Action interface`
 
 ## Reusable GitHub Action
 
+> [!NOTE]
 > You can use this visitor counter as a reusable, containerized GitHub Action in any repository.
+> - Replace `<your-org-or-username>` and `<central-repo-name>` with your actual values.
+> - Use a Personal Access Token (PAT) with repo access as `PERSONAL_ACCESS_TOKEN` secret in each target repo.
+> - The action will update `count.json` and regenerate `visitor.svg` in the central repo.
+> - Serve `visitor.svg` via GitHub Pages for embedding.
 
-1. Create a workflow file (e.g., `.github/workflows/update.yml`) in your repository:
 
-    ```yaml
-    name: Update Visitor Counter
-    on:
-      schedule:
-        - cron: '0 0,12 * * *' # Runs twice daily
-      workflow_dispatch:
-    
-    jobs:
-      update:
-        runs-on: ubuntu-latest
-        steps:
-          - uses: actions/checkout@v4
-          - uses: ./ # or username/repo@v1 if published
-            with:
-              token: ${{ secrets.GITHUB_TOKEN }}
-          - name: Commit and push changes
-            run: |
-              git config --global user.name 'github-actions[bot]'
-              git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-              git add count.json visitor.svg
-              git commit -m "Update visitor count" || echo "No changes to commit"
-              git push
-    ```
+**Create a workflow file (e.g., `.github/workflows/update-counter-views.yml`) in your target repository:**
 
-- The action will update `count.json` and regenerate `visitor.svg`.
-- Serve `visitor.svg` via GitHub Pages for embedding.
+```yaml
+name: Use Central Visitor Counter
+on:
+  schedule:
+    - cron: '0 0,12 * * *' # Runs twice daily
+  workflow_dispatch:
+
+jobs:
+  call-visitor-counter:
+    uses: <your-org-or-username>/<central-repo-name>/.github/workflows/reusable-visitor-counter.yml@main
+    with:
+      repo: ${{ github.repository }}
+      token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+```
+
