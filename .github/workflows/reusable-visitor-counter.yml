@@ -1,0 +1,29 @@
+name: reusable-visitor-counter
+on:
+  workflow_call:
+    inputs:
+      repo:
+        required: true
+        type: string
+      token:
+        required: true
+        type: string
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set repo environment variable
+        run: echo "REPO=${{ inputs.repo }}" >> $GITHUB_ENV
+      - name: Run visitor counter
+        uses: ./
+        with:
+          token: ${{ inputs.token }}
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add count.json visitor.svg
+          git commit -m "Update visitor count" || echo "No changes to commit"
+          git push
