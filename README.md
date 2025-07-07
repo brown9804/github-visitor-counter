@@ -84,4 +84,7 @@ jobs:
 > - Serve `visitor.svg` via GitHub Pages for embedding.
 
 
-![Visitors](https://brown9804.github.io/github-visitor-counter/visitor.svg)
+<div align="center">
+  <h3 style="color: #4CAF50;">Total</h3>
+  <img src="https://raw.githubusercontent.com/brown9804/github-visitor-counter/main/visitor.svg" alt="Visitor Count" style="border: 2px solid #4CAF50; border-radius: 5px; padding: 5px;"/>
+</div>
