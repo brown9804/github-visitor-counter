@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="40">
+  <rect width="180" height="40" fill="#555" />
+  <text x="90" y="25" fill="#fff" font-size="18" text-anchor="middle" alignment-baseline="middle">Visitors: 0</text>
+</svg>
