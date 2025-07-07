@@ -4,6 +4,10 @@ const fetch = require('node-fetch');
 
 const REPO = process.env.REPO || 'brown9804/github-visitor-counter';
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+if (!GITHUB_TOKEN) {
+  console.error('Error: GITHUB_TOKEN environment variable is not set.');
+  process.exit(1);
+}
 const COUNT_FILE = 'count.json';
 const SVG_FILE = 'visitor.svg';
 
