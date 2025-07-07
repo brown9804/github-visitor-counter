@@ -18,3 +18,4 @@ Last updated: 2025-05-20
 - Real-time visitor counting
 - SVG badge for easy embedding
 - Open source and customizable
+
