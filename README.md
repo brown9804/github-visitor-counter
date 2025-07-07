@@ -50,6 +50,8 @@ Last updated: 2025-05-20
 - `generate_svg.js` (fetches data and generates badge)
 - `count.json` (stores the latest count)
 - `visitor.svg` (the badge)
+- `Dockerfile` (containerizes the action for reuse)
+- `action.yml` (defines the GitHub Action interface)
 
 ## Reusable GitHub Action
 
