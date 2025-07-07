@@ -6,7 +6,7 @@ Costa Rica
 [![GitHub](https://img.shields.io/badge/--181717?logo=github&logoColor=ffffff)](https://github.com/)
 [brown9804](https://github.com/brown9804)
 
-Last updated: 2025-05-20
+Last updated: 2025-07-07
 
 ----------
 
@@ -27,7 +27,6 @@ Last updated: 2025-05-20
 - A GitHub Action runs `daily to fetch real visitor data from the GitHub Traffic API.`
 - The action updates `count.json` and regenerates `visitor.svg` **using the total number of visits (including repeat visits)**.
 - The badge is served via GitHub Pages and can be embedded anywhere:
-
 
 ## General Usage
 
