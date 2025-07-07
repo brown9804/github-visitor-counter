@@ -2,7 +2,7 @@
 const fs = require('fs');
 const fetch = require('node-fetch');
 
-const REPO = 'brown9804/github-visitor-counter';
+const REPO = process.env.REPO || 'brown9804/github-visitor-counter';
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const COUNT_FILE = 'count.json';
 const SVG_FILE = 'visitor.svg';
