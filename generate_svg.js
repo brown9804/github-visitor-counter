@@ -46,3 +46,4 @@ function updateSVG(count) {
     process.exit(1);
   }
 })();
+
