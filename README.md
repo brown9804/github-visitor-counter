@@ -59,11 +59,6 @@ Last updated: 2025-07-07
 
 > [!NOTE]
 > You can use this visitor counter as a reusable, containerized GitHub Action in any repository.
-> - Replace `<your-org-or-username>` and `<central-repo-name>` with your actual values.
-> - Use a Personal Access Token (PAT) with repo access as `PERSONAL_ACCESS_TOKEN` secret in each target repo.
-> - The action will update `count.json` and regenerate `visitor.svg` in the central repo.
-> - Serve `visitor.svg` via GitHub Pages for embedding.
-
 
 **Create a workflow file (e.g., `.github/workflows/update-counter-views.yml`) in your target repository:**
 
@@ -81,4 +76,10 @@ jobs:
       repo: ${{ github.repository }}
       token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 ```
+
+> [!IMPORTANT]
+> - Replace `<your-org-or-username>` and `<central-repo-name>` with your actual values.
+> - Use a Personal Access Token (PAT) with repo access as `PERSONAL_ACCESS_TOKEN` secret in each target repo.
+> - The action will update `count.json` and regenerate `visitor.svg` in the central repo.
+> - Serve `visitor.svg` via GitHub Pages for embedding.
 
