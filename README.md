@@ -28,7 +28,6 @@ Last updated: 2025-05-20
 - The action updates `count.json` and regenerates `visitor.svg` **using the total number of visits (including repeat visits)**.
 - The badge is served via GitHub Pages and can be embedded anywhere:
 
-
 ## General Usage
 
 > To display the visitor badge in your README or any markdown file, use the following snippet:
