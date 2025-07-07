@@ -83,3 +83,5 @@ jobs:
 > - The action will update `count.json` and regenerate `visitor.svg` in the central repo.
 > - Serve `visitor.svg` via GitHub Pages for embedding.
 
+
+![Visitors](https://brown9804.github.io/github-visitor-counter/visitor.svg)
