@@ -2,8 +2,9 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY generate_svg.js count.json ./
+COPY package.json ./
+RUN npm ci
 
-RUN npm install node-fetch
+COPY generate_svg.js count.json ./
 
 ENTRYPOINT ["node", "generate_svg.js"]
