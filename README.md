@@ -20,16 +20,14 @@ Last updated: 2025-07-07
 - Open source and customizable
 - **Scalable:** supports a reusable workflow for multi-repo use
 
-
 ## How it works
 
 > [!IMPORTANT]
->  This counter is updated once per day (not real-time) and shows the total number of visits (including repeat visits) as reported by GitHub.
+> This counter is updated once per day (not real-time) and shows the total number of visits (including repeat visits) as reported by GitHub.
 
 - A reusable GitHub Action workflow runs *daily* to fetch real visitor data from the GitHub Traffic API.
 - The action updates `count.json` and regenerates `visitor.svg` **using the total number of visits (including repeat visits)**.
 - The badge is served via GitHub Pages and can be embedded anywhere.
-
 
 ## General Usage
 
@@ -78,11 +76,11 @@ jobs:
 ```
 
 > [!IMPORTANT]
+>
 > - Replace `<your-org-or-username>` and `<central-repo-name>` with your actual values.
 > - Use a Personal Access Token (PAT) with repo access as `PERSONAL_ACCESS_TOKEN` secret in each target repo.
 > - The action will update `count.json` and regenerate `visitor.svg` in the central repo.
 > - Serve `visitor.svg` via GitHub Pages for embedding.
-
 
 <div align="center">
   <h3 style="color: #4CAF50;">Total</h3>
