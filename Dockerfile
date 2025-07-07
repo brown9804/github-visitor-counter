@@ -3,7 +3,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 COPY package.json ./
-RUN npm ci
+RUN npm install
 
 COPY generate_svg.js count.json ./
 
