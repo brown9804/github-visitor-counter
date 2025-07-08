@@ -1,4 +1,5 @@
 name: reusable-visitor-counter
+
 on:
   schedule:
     - cron: '0 0,12 * * *'
@@ -14,9 +15,9 @@ on:
       repo:
         required: true
         type: string
-      token:
+    secrets:
+      TRAFFIC_TOKEN:
         required: true
-        type: string
 
 jobs:
   update:
@@ -24,20 +25,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set REPO and GITHUB_TOKEN environment variables
+      - name: Set environment variables
         run: |
-          if [ "${{ github.event_name }}" = "workflow_call" ]; then
-            echo "REPO=${{ inputs.repo }}" >> $GITHUB_ENV
-            echo "GITHUB_TOKEN=${{ inputs.token }}" >> $GITHUB_ENV
-          else
-            echo "REPO=${{ github.repository }}" >> $GITHUB_ENV
-            echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
-          fi
+          echo "REPO=${{ inputs.repo || github.repository }}" >> $GITHUB_ENV
+          echo "TRAFFIC_TOKEN=${{ secrets.TRAFFIC_TOKEN }}" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: npm install
 
       - name: Run generate_svg.js
+        env:
+          TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
         run: node generate_svg.js
 
       - name: Commit and push changes
