@@ -37,7 +37,7 @@ jobs:
         env:
           TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
         run: node generate_svg.js
-
+      
       - name: Commit and push changes
         run: |
           git config --global user.name 'github-actions[bot]'
