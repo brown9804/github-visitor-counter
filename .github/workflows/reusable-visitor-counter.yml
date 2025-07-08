@@ -23,12 +23,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Set repo environment variable
         run: echo "REPO=${{ inputs.repo }}" >> $GITHUB_ENV
-      - name: Run visitor counter
-        uses: ./
-        with:
-          token: ${{ inputs.token }}
+
+      - name: Set GITHUB_TOKEN environment variable
+        run: echo "GITHUB_TOKEN=${{ inputs.token }}" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run generate_svg.js
+        run: node generate_svg.js
+
       - name: Commit and push changes
         run: |
           git config --global user.name 'github-actions[bot]'
