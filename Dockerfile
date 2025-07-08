@@ -3,8 +3,8 @@ FROM node:20-alpine
 WORKDIR /app
 
 COPY package.json ./
-RUN npm install
-
 COPY generate_svg.js count.json ./
+
+RUN npm install
 
 ENTRYPOINT ["node", "generate_svg.js"]
