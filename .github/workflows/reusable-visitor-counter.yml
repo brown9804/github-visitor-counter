@@ -45,4 +45,3 @@ jobs:
           git add count.json visitor.svg
           git commit -m "Update visitor count" || echo "No changes to commit"
           git push https://x-access-token:${{ secrets.TRAFFIC_TOKEN }}@github.com/${{ env.REPO }}.git HEAD:main
-
