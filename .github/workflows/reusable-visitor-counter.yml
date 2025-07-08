@@ -1,14 +1,14 @@
 name: reusable-visitor-counter
 on:
   schedule:
-    - cron: '0 0,12 * * *' # Runs twice daily
-  workflow_dispatch:        # Allows manual trigger
+    - cron: '0 0,12 * * *'
+  workflow_dispatch:
   push:
     branches:
-      - main                # Triggers on push (including PR merge) to main
+      - main
   pull_request:
     branches:
-      - main                # Triggers when a PR targets main
+      - main
   workflow_call:
     inputs:
       repo:
@@ -24,11 +24,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set repo environment variable
-        run: echo "REPO=${{ inputs.repo }}" >> $GITHUB_ENV
-
-      - name: Set GITHUB_TOKEN environment variable
-        run: echo "GITHUB_TOKEN=${{ inputs.token }}" >> $GITHUB_ENV
+      - name: Set REPO and GITHUB_TOKEN environment variables
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_call" ]; then
+            echo "REPO=${{ inputs.repo }}" >> $GITHUB_ENV
+            echo "GITHUB_TOKEN=${{ inputs.token }}" >> $GITHUB_ENV
+          else
+            echo "REPO=${{ github.repository }}" >> $GITHUB_ENV
+            echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
+          fi
 
       - name: Install dependencies
         run: npm install
