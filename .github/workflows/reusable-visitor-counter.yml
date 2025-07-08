@@ -1,5 +1,14 @@
 name: reusable-visitor-counter
 on:
+  schedule:
+    - cron: '0 0,12 * * *'
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   workflow_call:
     inputs:
       repo:
@@ -14,12 +23,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set repo environment variable
-        run: echo "REPO=${{ inputs.repo }}" >> $GITHUB_ENV
-      - name: Run visitor counter
-        uses: ./
-        with:
-          token: ${{ inputs.token }}
+
+      - name: Set REPO and GITHUB_TOKEN environment variables
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_call" ]; then
+            echo "REPO=${{ inputs.repo }}" >> $GITHUB_ENV
+            echo "GITHUB_TOKEN=${{ inputs.token }}" >> $GITHUB_ENV
+          else
+            echo "REPO=${{ github.repository }}" >> $GITHUB_ENV
+            echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
+          fi
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run generate_svg.js
+        run: node generate_svg.js
+
       - name: Commit and push changes
         run: |
           git config --global user.name 'github-actions[bot]'
