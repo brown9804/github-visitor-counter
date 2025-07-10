@@ -76,7 +76,7 @@ jobs:
 
 <!-- START BADGE -->
 <div align="center">
-  <img src="https://img.shields.io/badge/Total%20views-734-yellow" alt="Total views">
+  <img src="https://img.shields.io/badge/Total%20views-611-yellow" alt="Total views">
   <p>Refresh Date: 2025-07-10</p>
 </div>
 <!-- END BADGE -->

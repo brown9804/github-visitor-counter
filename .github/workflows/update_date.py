@@ -20,19 +20,30 @@ current_date = datetime.now(timezone.utc).strftime('%Y-%m-%d')
 
 # Function to update the last modified date in a file
 def update_date_in_file(file_path):
-    with open(file_path, 'r') as file:
-        lines = file.readlines()
+    if 'node_modules' in file_path:
+        print(f"Skipping file in node_modules: {file_path}")
+        return
 
-    updated = False
-    with open(file_path, 'w') as file:
-        for line in lines:
-            if line.startswith('Last updated:'):
-                file.write(f'Last updated: {current_date}\n')
-                updated = True
-            else:
-                file.write(line)
-        if not updated:
-            file.write(f'\nLast updated: {current_date}\n')
+    try:
+        with open(file_path, 'r') as file:
+            lines = file.readlines()
+
+        updated = False
+        with open(file_path, 'w') as file:
+            for line in lines:
+                if line.startswith('Last updated:'):
+                    file.write(f'Last updated: {current_date}\n')
+                    updated = True
+                else:
+                    file.write(line)
+            if not updated:
+                file.write(f'\nLast updated: {current_date}\n')
+
+        print(f"Updated file: {file_path}")
+    except FileNotFoundError:
+        print(f"File not found: {file_path}")
+    except Exception as e:
+        print(f"Error updating file {file_path}: {e}")
 
 # Check if there are any modified Markdown files
 if not modified_md_files:
