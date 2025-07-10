@@ -30,6 +30,7 @@ Last updated: 2025-07-10
 
 1. **Add the Badge to Your Repository**:
    - Include the following markdown in your `README.md` file:
+
      ```markdown
         <div align="center">
           <img src="https://img.shields.io/badge/Profile%20views-12345-yellow" alt="Profile views">
@@ -70,6 +71,7 @@ jobs:
           -d '{"ref":"main"}'
           echo "Visitor counter triggered successfully."
 ```
+
 ## Files structure
 
 - `README.md`: Contains instructions and displays the visitor count badge.
