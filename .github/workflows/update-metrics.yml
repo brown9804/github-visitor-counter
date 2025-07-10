@@ -34,6 +34,8 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git checkout main  # or replace with your default branch name
           git add README.md metrics.json
-          git commit -m "Update visitor count"
-          git push
+          git commit -m "Update visitor count" || echo "No changes to commit"
+          git push origin main
+
