@@ -32,10 +32,12 @@ Last updated: 2025-07-10
    - Include the following markdown in your `README.md` file:
 
      ```markdown
+        <!-- START BADGE -->
         <div align="center">
           <img src="https://img.shields.io/badge/Total%20views-12345-yellow" alt="Total views">
           <p>Refresh Date: 2025-07-10</p>
         </div>
+        <!-- END BADGE -->
      ```
 
 2. **Create a Personal Access Token**:
@@ -83,7 +85,9 @@ jobs:
 > - Use a Personal Access Token (PAT) with `repo` access as `TRAFFIC_TOKEN` secret in each target repository.
 > - The action will trigger the visitor counter logic in the main repository and update the badge dynamically.
 
+<!-- START BADGE -->
 <div align="center">
   <img src="https://img.shields.io/badge/Total%20views-12345-yellow" alt="Total views">
   <p>Refresh Date: 2025-07-10</p>
 </div>
+<!-- END BADGE -->
