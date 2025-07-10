@@ -39,12 +39,15 @@ jobs:
 
       - name: Commit and push changes (PR context)
         if: github.event_name == 'pull_request'
+        env:
+          TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
         run: |
           git fetch origin
           git checkout -b ${{ github.event.pull_request.head.ref }} origin/${{ github.event.pull_request.head.ref }}
           git add -A
           git commit -m "Update counter" || echo "No changes to commit"
           git pull --rebase origin ${{ github.event.pull_request.head.ref }} || echo "No rebase needed"
+          git remote set-url origin https://x-access-token:${TOKEN}@github.com/${{ github.repository }}
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
 
       - name: Commit and push changes (main branch context)
