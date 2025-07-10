@@ -41,11 +41,9 @@ Last updated: 2025-07-10
 2. **Create a Personal Access Token**:
    - Go to **GitHub Settings** > **Developer Settings** > **Personal Access Tokens**.
    - Generate a new token with `repo` access.
-
 3. **Save the Token as a Secret**:
    - In your repository, navigate to **Settings** > **Secrets and Variables** > **Actions**.
    - Add a new secret named `TRAFFIC_TOKEN` and paste the generated token.
-
 4. **Trigger the Pipeline**:
    - Add a GitHub Actions workflow (`update-metrics.yml`) to your repository to trigger the visitor counter logic in the main repository.
    - Use the following content for the workflow:
