@@ -1,10 +1,10 @@
 {
   "name": "github-visitor-counter",
   "version": "1.0.0",
-  "description": "GitHub Action to update and display visitor count as SVG badge.",
-  "main": "generate_svg.js",
+  "description": "GitHub Action to update and display visitor count.",
+  "main": "update_repo_views_counter.js",
   "scripts": {
-    "start": "node generate_svg.js"
+    "start": "node update_repo_views_counter.js"
   },
   "dependencies": {
     "node-fetch": "^2.6.7"
