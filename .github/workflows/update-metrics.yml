@@ -1,0 +1,78 @@
+name: Update Visitor Count
+
+on:
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-visitor-count:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Update visitor count
+        run: node update_repo_views_counter.js
+        env:
+          TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
+          REPO: ${{ github.repository }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit and push to PR branch
+        if: github.event_name == 'pull_request'
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git fetch origin
+          git checkout -b ${{ github.event.pull_request.head.ref }} origin/${{ github.event.pull_request.head.ref }}
+          git add -A
+          git commit -m "Update visitor count" || echo "No changes to commit"
+          git remote set-url origin https://x-access-token:${TOKEN}@github.com/${{ github.repository }}
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+
+      - name: Commit and push to new branch (non-PR)
+        if: github.event_name != 'pull_request'
+        id: push
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="update-visitor-count-$(date +%s)"
+          git checkout -b $BRANCH
+          git add -A
+          git commit -m "Update visitor count" || echo "No changes to commit"
+          git remote set-url origin https://x-access-token:${TOKEN}@github.com/${{ github.repository }}
+          git push origin $BRANCH
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request (non-PR)
+        if: github.event_name != 'pull_request'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ steps.push.outputs.branch }}
+          title: "Update visitor count"
+          body: "Automated update of visitor count"
+          base: main
