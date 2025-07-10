@@ -54,18 +54,17 @@ jobs:
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
 
       - name: Commit and push to new branch (non-PR)
-        if: github.event_name != 'pull_request'
-        id: push
+        if: github.event_name == 'pull_request'
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          BRANCH="update-visitor-count-$(date +%s)"
-          git checkout -b $BRANCH
+          git fetch origin
+          git checkout ${{ github.event.pull_request.head.ref }} || git checkout -b ${{ github.event.pull_request.head.ref }} origin/${{ github.event.pull_request.head.ref }}
           git add -A
           git commit -m "Update visitor count" || echo "No changes to commit"
           git remote set-url origin https://x-access-token:${TOKEN}@github.com/${{ github.repository }}
-          git push origin $BRANCH
-          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          git pull --rebase origin ${{ github.event.pull_request.head.ref }} || echo "No rebase needed"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
 
       - name: Create Pull Request (non-PR)
         if: github.event_name != 'pull_request'
