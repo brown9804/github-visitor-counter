@@ -43,7 +43,7 @@ function updateMetricsFile(count) {
 function updateReadmeFile(count) {
   const refreshDate = new Date().toISOString().split('T')[0];
   const badge = `<div align="center">
-  <img src="https://img.shields.io/badge/Total%20views-${count}-yellow" alt="Total views">
+  <img src="https://img.shields.io/badge/Total%20views-${count}-limegreen" alt="Total views">
   <p>Refresh Date: ${refreshDate}</p>
 </div>`;
 
