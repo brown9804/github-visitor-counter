@@ -6,83 +6,84 @@ Costa Rica
 [![GitHub](https://img.shields.io/badge/--181717?logo=github&logoColor=ffffff)](https://github.com/)
 [brown9804](https://github.com/brown9804)
 
-Last updated: 2025-07-08
+Last updated: 2025-07-10
 
 ----------
 
-> A customizable GitHub visitor counter that tracks and displays the number of visits to your GitHub profile or repository. It uses GitHub Pages, JavaScript, and a JSON file to store and update the count, rendering a dynamic SVG badge you can embed in your README.
+> This repository provides a customizable GitHub visitor counter that tracks and displays the number of visits to your GitHub profile or repository. The counter updates daily using the GitHub Traffic API and writes the total views directly into the README file.
 
 ## Features
 
-- Simple setup using GitHub Pages
-- **Daily-updated** visitor counting (using GitHub Traffic API)
-- SVG badge for easy embedding
-- Open source and customizable
-- **Scalable:** supports a reusable workflow for multi-repo use
+- **Daily-updated visitor counting**: Fetches real visitor data from the GitHub Traffic API.
+- **Markdown-based display**: Updates the README file with the total visitor count.
+- **Open source and customizable**.
 
 ## How it works
 
 > [!IMPORTANT]
 > This counter is updated once per day (not real-time) and shows the total number of visits (including repeat visits) as reported by GitHub.
 
-- A reusable GitHub Action workflow runs *daily* to fetch real visitor data from the GitHub Traffic API.
-- The action updates `count.json` and regenerates `visitor.svg` **using the total number of visits (including repeat visits)**.
-- The badge is served via GitHub Pages and can be embedded anywhere.
+- A GitHub Action workflow runs daily to fetch visitor data from the GitHub Traffic API.
+- The action updates the `README.md` file with the total visitor count and the refresh timestamp.
 
-## General Usage
+## How to use it
 
-> To display the visitor badge in your README or any markdown file, use the following snippet:
+1. **Add the Badge to Your Repository**:
+   - Include the following markdown in your `README.md` file:
+     ```markdown
+        <div align="center">
+          <img src="https://img.shields.io/badge/Profile%20views-12345-yellow" alt="Profile views">
+          <p>Refresh Date: 2025-07-10</p>
+        </div>
+     ```
 
-```markdown
-![Visitors](https://<your-username>.github.io/<your-repo-name>/visitor.svg)
-```
+2. **Create a Personal Access Token**:
+   - Go to **GitHub Settings** > **Developer Settings** > **Personal Access Tokens**.
+   - Generate a new token with `repo` access.
 
-- **Replace `<your-username>` with your GitHub username and `<your-repo-name>` with your repository name.**
-- For example, if your username is `brown9804` and your repository is `github-visitor-counter`, use:
+3. **Save the Token as a Secret**:
+   - In your repository, navigate to **Settings** > **Secrets and Variables** > **Actions**.
+   - Add a new secret named `TRAFFIC_TOKEN` and paste the generated token.
 
-    ```markdown
-    ![Visitors](https://brown9804.github.io/github-visitor-counter/visitor.svg)
-    ```
-
-## Files structure
-
-- .github/workflows/reusable-visitor-counter.yml: `Reusable GitHub Action workflow for updating the badge`
-- generate_svg.js: `Fetches data and generates badge`
-- count.json: `Stores the latest count`
-- visitor.svg: `The badge`
-- Dockerfile: `Containerizes the action for reuse`
-- action.yml: `Defines the GitHub Action interface`
-
-## Reusable GitHub Action
-
-> [!NOTE]
-> You can use this visitor counter as a reusable, containerized GitHub Action in any repository.
-
-**Create a workflow file (e.g., `.github/workflows/update-counter-views.yml`) in your target repository:**
+4. **Trigger the Pipeline**:
+   - Add a GitHub Actions workflow (`update-metrics.yml`) to your repository to trigger the visitor counter logic in the main repository.
+   - Use the following content for the workflow:
 
 ```yaml
-name: Use Central Visitor Counter
+name: Trigger Visitor Counter
+
 on:
   schedule:
-    - cron: '0 0,12 * * *' # Runs twice daily
-  workflow_dispatch:
+    - cron: '0 0 * * *' # Runs daily at midnight
+  workflow_dispatch: # Allows manual triggering
 
 jobs:
-  call-visitor-counter:
-    uses: <your-org-or-username>/<central-repo-name>/.github/workflows/reusable-visitor-counter.yml@main
-    with:
-      repo: ${{ github.repository }}
-      token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+  trigger-counter:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Visitor Counter Logic
+        run: |
+          curl -X POST https://api.github.com/repos/<main-repo-owner>/<main-repo-name>/actions/workflows/update-metrics.yml/dispatches \
+          -H "Authorization: Bearer ${{ secrets.TRAFFIC_TOKEN }}" \
+          -H "Accept: application/vnd.github+json" \
+          -d '{"ref":"main"}'
+          echo "Visitor counter triggered successfully."
 ```
+## Files structure
+
+- `README.md`: Contains instructions and displays the visitor count badge.
+- `update_repo_views_counter.js`: Script to fetch visitor count data from the GitHub Traffic API and update the `README.md` file.
+- `package.json`: Defines dependencies and scripts for the project.
+- `LICENSE`: Specifies the license for the project.
 
 > [!IMPORTANT]
 >
-> - Replace `<your-org-or-username>` and `<central-repo-name>` with your actual values.
-> - Use a Personal Access Token (PAT) with repo access as `PERSONAL_ACCESS_TOKEN` secret in each target repo.
-> - The action will update `count.json` and regenerate `visitor.svg` in the central repo.
-> - Serve `visitor.svg` via GitHub Pages for embedding.
+> - Replace `<main-repo-owner>` and `<main-repo-name>` with your actual values.
+> - Use a Personal Access Token (PAT) with `repo` access as `TRAFFIC_TOKEN` secret in each target repository.
+> - The action will trigger the visitor counter logic in the main repository and update the badge dynamically.
 
 <div align="center">
-  <h3 style="color: #4CAF50;">Total</h3>
-  <img src="https://raw.githubusercontent.com/brown9804/github-visitor-counter/main/visitor.svg" alt="Visitor Count" style="border: 2px solid #4CAF50; border-radius: 5px; padding: 5px;"/>
+  <img src="https://img.shields.io/badge/Profile%20views-12345-yellow" alt="Profile views">
+  <p>Refresh Date: 2025-07-10</p>
 </div>
