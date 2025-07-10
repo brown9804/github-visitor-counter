@@ -46,14 +46,12 @@ jobs:
           git commit -m "Update counter" || echo "No changes to commit"
           git pull --rebase origin ${{ github.event.pull_request.head.ref }} || echo "No rebase needed"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
-      
+
       - name: Commit and push changes (main branch context)
         if: github.event_name != 'pull_request'
         env:
           TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
         run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git checkout main
           git add -A
           git commit -m "Update counter" || echo "No changes to commit"
