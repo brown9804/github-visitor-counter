@@ -41,34 +41,34 @@ Last updated: 2025-07-10
 
    ```yaml
    name: Update Visitor Counter
-
+   
    on:
      schedule:
        - cron: '0 0 * * *' # Runs daily at midnight
      workflow_dispatch: # Allows manual triggering
-
+   
    jobs:
      update-counter:
        runs-on: ubuntu-latest
-
+   
        steps:
          - name: Checkout repository
            uses: actions/checkout@v3
-
+   
          - name: Set up Node.js
            uses: actions/setup-node@v3
            with:
              node-version: '16'
-
+   
          - name: Install dependencies
-           run: npm install
-
+           run: npm install @brown9804/github-visitor-counter
+   
          - name: Run visitor counter script
-           run: node update_repo_views_counter.js
+           run: node node_modules/@brown9804/github-visitor-counter/update_repo_views_counter.js
            env:
              TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
              REPO: ${{ github.repository }}
-
+   
          - name: Commit and push changes
            run: |
              git config --global user.name "github-actions[bot]"
