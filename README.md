@@ -29,15 +29,7 @@ Last updated: 2025-07-10
 ## How to use it
 
 1. **Add the Badge to Your Repository**:
-   - Include the following markdown in your `README.md` file:
-
-     ```markdown
-        <div align="center">
-          <img src="https://img.shields.io/badge/Total%20views-12345-yellow" alt="Total views">
-          <p>Refresh Date: 2025-07-10</p>
-        </div>
-     ```
-
+   - Include the following markdown in your `README.md` file, between `<!-- START BADGE -->` and `<!-- END BADGE -->`, as shown in the bottom.
 2. **Create a Personal Access Token**:
    - Go to **GitHub Settings** > **Developer Settings** > **Personal Access Tokens**.
    - Generate a new token with `repo` access.
@@ -83,7 +75,9 @@ jobs:
 > - Use a Personal Access Token (PAT) with `repo` access as `TRAFFIC_TOKEN` secret in each target repository.
 > - The action will trigger the visitor counter logic in the main repository and update the badge dynamically.
 
+<!-- START BADGE -->
 <div align="center">
   <img src="https://img.shields.io/badge/Total%20views-12345-yellow" alt="Total views">
   <p>Refresh Date: 2025-07-10</p>
 </div>
+<!-- END BADGE -->
