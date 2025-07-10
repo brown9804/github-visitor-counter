@@ -35,31 +35,48 @@ Last updated: 2025-07-10
 3. **Save the Token as a Secret**:
    - In your repository, navigate to **Settings** > **Secrets and Variables** > **Actions**.
    - Add a new secret named `TRAFFIC_TOKEN` and paste the generated token.
-4. **Trigger the Pipeline**:
-   - Add a GitHub Actions workflow (`update-metrics.yml`) to your repository to trigger the visitor counter logic in the main repository.
+4. **Add the Pipeline**: This single pipeline will fetch the visitor count, update the badge in the `README.md` file, and push the changes back to the repository.
+   - Create a GitHub Actions workflow (`update-metrics.yml`) in your repository to handle the visitor counter logic.
    - Use the following content for the workflow:
 
-```yaml
-name: Trigger Visitor Counter
+   ```yaml
+   name: Update Visitor Counter
 
-on:
-  schedule:
-    - cron: '0 0 * * *' # Runs daily at midnight
-  workflow_dispatch: # Allows manual triggering
+   on:
+     schedule:
+       - cron: '0 0 * * *' # Runs daily at midnight
+     workflow_dispatch: # Allows manual triggering
 
-jobs:
-  trigger-counter:
-    runs-on: ubuntu-latest
+   jobs:
+     update-counter:
+       runs-on: ubuntu-latest
 
-    steps:
-      - name: Trigger Visitor Counter Logic
-        run: |
-          curl -X POST https://api.github.com/repos/<main-repo-owner>/<main-repo-name>/actions/workflows/update-metrics.yml/dispatches \
-          -H "Authorization: Bearer ${{ secrets.TRAFFIC_TOKEN }}" \
-          -H "Accept: application/vnd.github+json" \
-          -d '{"ref":"main"}'
-          echo "Visitor counter triggered successfully."
-```
+       steps:
+         - name: Checkout repository
+           uses: actions/checkout@v3
+
+         - name: Set up Node.js
+           uses: actions/setup-node@v3
+           with:
+             node-version: '16'
+
+         - name: Install dependencies
+           run: npm install
+
+         - name: Run visitor counter script
+           run: node update_repo_views_counter.js
+           env:
+             TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
+             REPO: ${{ github.repository }}
+
+         - name: Commit and push changes
+           run: |
+             git config --global user.name "github-actions[bot]"
+             git config --global user.email "github-actions[bot]@users.noreply.github.com"
+             git add README.md metrics.json
+             git commit -m "Update visitor count"
+             git push
+   ```
 
 ## Files structure
 
