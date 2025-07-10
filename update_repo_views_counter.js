@@ -41,11 +41,13 @@ function updateMetricsFile(count) {
 
 function updateReadmeFile(count) {
   const refreshDate = new Date().toISOString().split('T')[0];
-  const badge = `![Total views](https://img.shields.io/badge/Total%20views-${count}-yellow)`;
-  const content = `${badge}\nRefresh Date: ${refreshDate}`;
+  const badge = `<div align="center">\n  <img src="https://img.shields.io/badge/Total%20views-${count}-yellow" alt="Total views">\n  <p>Refresh Date: ${refreshDate}</p>\n</div>`;
 
   const readme = fs.readFileSync(README_FILE, 'utf-8');
-  const updatedReadme = readme.replace(/\!\[Total views\].*\nRefresh Date:.*/, content);
+  const updatedReadme = readme.replace(
+    /<div align="center">[\s\S]*?<p>Refresh Date:.*?<\/p>\n<\/div>/,
+    badge
+  );
 
   fs.writeFileSync(README_FILE, updatedReadme);
   console.log(`README updated with visitor count: ${count}`);
