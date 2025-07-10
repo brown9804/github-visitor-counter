@@ -1,6 +1,7 @@
 // Fetches GitHub Traffic API data and updates the visitor count in the README file
 const fs = require('fs');
 const fetch = require('node-fetch');
+const { execSync } = require('child_process');
 
 const REPO = process.env.REPO;
 const GITHUB_TOKEN = process.env.TRAFFIC_TOKEN;
@@ -56,6 +57,13 @@ function updateReadmeFile(count) {
   console.log(`README updated with visitor count: ${count}`);
 }
 
+function deleteNodeModules() {
+  if (fs.existsSync('node_modules')) {
+    execSync('rm -rf node_modules', { stdio: 'inherit' });
+    console.log('node_modules folder deleted.');
+  }
+}
+
 (async () => {
   try {
     const count = await getVisitorCount();
@@ -64,5 +72,7 @@ function updateReadmeFile(count) {
   } catch (err) {
     console.error(err);
     process.exit(1);
+  } finally {
+    deleteNodeModules(); // Delete node_modules after script execution
   }
 })();
