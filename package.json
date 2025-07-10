@@ -1,5 +1,5 @@
 {
-  "name": "github-visitor-counter",
+  "name": "@brown9804/github-visitor-counter",
   "version": "1.0.0",
   "description": "GitHub Action to update and display visitor count.",
   "main": "update_repo_views_counter.js",
@@ -9,5 +9,16 @@
   "dependencies": {
     "node-fetch": "^2.6.7"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brown9804/github-visitor-counter.git"
+  },
+  "keywords": [
+    "github",
+    "visitor",
+    "counter",
+    "badge"
+  ],
+  "author": "brown9804",
   "license": "MIT"
 }
