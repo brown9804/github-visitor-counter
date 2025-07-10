@@ -33,7 +33,7 @@ Last updated: 2025-07-10
 
      ```markdown
         <div align="center">
-          <img src="https://img.shields.io/badge/Profile%20views-12345-yellow" alt="Profile views">
+          <img src="https://img.shields.io/badge/Total%20views-12345-yellow" alt="Total views">
           <p>Refresh Date: 2025-07-10</p>
         </div>
      ```
@@ -84,6 +84,6 @@ jobs:
 > - The action will trigger the visitor counter logic in the main repository and update the badge dynamically.
 
 <div align="center">
-  <img src="https://img.shields.io/badge/Profile%20views-12345-yellow" alt="Profile views">
+  <img src="https://img.shields.io/badge/Total%20views-12345-yellow" alt="Total views">
   <p>Refresh Date: 2025-07-10</p>
 </div>
