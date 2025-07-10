@@ -33,11 +33,11 @@ Last updated: 2025-07-10
 
      ```markdown
         <!-- START BADGE -->
-        <div align="center">
-          <img src="https://img.shields.io/badge/Total%20views-12345-yellow" alt="Total views">
-          <p>Refresh Date: 2025-07-10</p>
-        </div>
-        <!-- END BADGE -->
+<div align="center">
+  <img src="https://img.shields.io/badge/Total%20views-611-yellow" alt="Total views">
+  <p>Refresh Date: 2025-07-10</p>
+</div>
+<!-- END BADGE -->
      ```
 
 2. **Create a Personal Access Token**:
