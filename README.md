@@ -28,13 +28,7 @@ Last updated: 2025-07-10
 
 ## How to use it
 
-1. **Add the Badge to Your Repository**:
-   - Include the following markdown in your `README.md` file, between `<!-- START BADGE -->
-<div align="center">
-  <img src="https://img.shields.io/badge/Total%20views-734-yellow" alt="Total views">
-  <p>Refresh Date: 2025-07-10</p>
-</div>
-<!-- END BADGE -->`, as shown in the bottom.
+1. **Add the Badge to Your Repository**: Include the following markdown in your `README.md` file, between the `START BADGE` and `END BADGE` (included), as shown in the bottom.
 2. **Create a Personal Access Token**:
    - Go to **GitHub Settings** > **Developer Settings** > **Personal Access Tokens**.
    - Generate a new token with `repo` access.
