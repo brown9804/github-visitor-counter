@@ -36,46 +36,104 @@ Last updated: 2025-07-10
    - In your repository, navigate to **Settings** > **Secrets and Variables** > **Actions**.
    - Add a new secret named `TRAFFIC_TOKEN` and paste the generated token.
 4. **Add the Pipeline**: This single pipeline will fetch the visitor count, update the badge in the `README.md` file, and push the changes back to the repository.
-   - Create a GitHub Actions workflow (`update-metrics.yml`) in your repository to handle the visitor counter logic.
-   - Use the following content for the workflow:
+   - Create a GitHub Actions workflow (`use-visitor-counter.yml`) in your repository to handle the visitor counter logic.
+   - Use the following content for the workflow, you can use [this pipeline as refence](https://github.com/brown9804/Cloud-DevOps-Overview/blob/main/.github/workflows/use-visitor-counter.yml).
 
    ```yaml
-   name: Update Visitor Counter
+   name: Use Visitor Counter Logic
    
    on:
+     pull_request:
+       branches:
+         - main
      schedule:
        - cron: '0 0 * * *' # Runs daily at midnight
-     workflow_dispatch: # Allows manual triggering
+     workflow_dispatch:  # Allows manual triggering
+   
+   permissions:
+     contents: write
+     pull-requests: write
    
    jobs:
-     update-counter:
+     update-visitor-count:
        runs-on: ubuntu-latest
    
        steps:
-         - name: Checkout repository
-           uses: actions/checkout@v3
+         - name: Checkout current repository
+           uses: actions/checkout@v4
+           with:
+             fetch-depth: 0
+   
+         - name: Shallow clone visitor counter logic
+           run: git clone --depth=1 https://github.com/brown9804/github-visitor-counter.git
    
          - name: Set up Node.js
-           uses: actions/setup-node@v3
+           uses: actions/setup-node@v4
            with:
-             node-version: '16'
+             node-version: '20'
    
-         - name: Install dependencies
-           run: npm install @brown9804/github-visitor-counter
+         - name: Install dependencies for github-visitor-counter
+           run: |
+             cd github-visitor-counter
+             npm ci
    
-         - name: Run visitor counter script
-           run: node node_modules/@brown9804/github-visitor-counter/update_repo_views_counter.js
+         - name: Run visitor counter logic (updates markdown badges and metrics.json)
+           run: node github-visitor-counter/update_repo_views_counter.js
            env:
              TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
              REPO: ${{ github.repository }}
    
-         - name: Commit and push changes
+         - name: Move generated metrics.json to root
+           run: mv github-visitor-counter/metrics.json .
+   
+         - name: List files for debugging
+           run: |
+             ls -l
+             ls -l github-visitor-counter
+   
+         - name: Clean up visitor counter logic
+           run: rm -rf github-visitor-counter
+   
+         - name: Configure Git author
            run: |
              git config --global user.name "github-actions[bot]"
              git config --global user.email "github-actions[bot]@users.noreply.github.com"
-             git add README.md metrics.json
-             git commit -m "Update visitor count"
-             git push
+   
+         - name: Commit and push changes (PR)
+           if: github.event_name == 'pull_request'
+           env:
+             TOKEN: ${{ secrets.GITHUB_TOKEN }}
+           run: |
+             git fetch origin
+             git checkout -b ${{ github.event.pull_request.head.ref }} origin/${{ github.event.pull_request.head.ref }}
+             git add "*.md" metrics.json
+             git commit -m "Update visitor count" || echo "No changes to commit"
+             git remote set-url origin https://x-access-token:${TOKEN}@github.com/${{ github.repository }}
+             git pull --rebase origin ${{ github.event.pull_request.head.ref }} || echo "No rebase needed"
+             git push origin HEAD:${{ github.event.pull_request.head.ref }}
+   
+         - name: Commit and push changes (non-PR)
+           if: github.event_name != 'pull_request'
+           env:
+             TOKEN: ${{ secrets.GITHUB_TOKEN }}
+           run: |
+             git fetch origin
+             git checkout ${{ github.event.pull_request.head.ref }} || git checkout -b ${{ github.event.pull_request.head.ref }} origin/${{ github.event.pull_request.head.ref }}
+             git add "*.md" metrics.json
+             git commit -m "Update visitor count" || echo "No changes to commit"
+             git remote set-url origin https://x-access-token:${TOKEN}@github.com/${{ github.repository }}
+             git pull --rebase origin ${{ github.event.pull_request.head.ref }} || echo "No rebase needed"
+             git push origin HEAD:${{ github.event.pull_request.head.ref }}
+   
+         - name: Create Pull Request (non-PR)
+           if: github.event_name != 'pull_request'
+           uses: peter-evans/create-pull-request@v6
+           with:
+             token: ${{ secrets.GITHUB_TOKEN }}
+             branch: update-visitor-count
+             title: "Update visitor count"
+             body: "Automated update of visitor count"
+             base: main
    ```
 
 ## Files structure
