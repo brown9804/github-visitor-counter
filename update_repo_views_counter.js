@@ -41,7 +41,7 @@ function updateMetricsFile(total_views) {
 
 function updateMarkdownBadges(total_views) {
   const refreshDate = new Date().toISOString().split('T')[0];
-  const badgeRegex = /<!-- START BADGE -->[\\s\\S]*?<!-- END BADGE -->/g;
+  const badgeRegex = /<!-- START BADGE -->[\s\S]*?<!-- END BADGE -->/g;
 
   const badgeBlock = `<!-- START BADGE -->
 <div align="center">
