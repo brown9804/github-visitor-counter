@@ -38,4 +38,5 @@ jobs:
         run: |
           git add -A
           git commit -m "Update last modified date in Markdown files" || echo "No changes to commit"
+          git remote set-url origin https://x-access-token:${TOKEN}@github.com/${{ github.repository }}
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
