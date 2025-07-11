@@ -42,10 +42,10 @@ function updateMetricsFile(total_views) {
 function updateMarkdownBadges(total_views) {
   const refreshDate = new Date().toISOString().split('T')[0];
   const badgeRegex = /<!-- START BADGE -->[\s\S]*?<!-- END BADGE -->/g;
-
+  
   const badgeBlock = `<!-- START BADGE -->
 <div align="center">
-  https://img.shields.io/badge/Total%20views-${total_views}-limegreen
+  <img src="https://img.shields.io/badge/Total%20views-${total_views}-limegreen" alt="Total views">
   <p>Refresh Date: ${refreshDate}</p>
 </div>
 <!-- END BADGE -->`;
