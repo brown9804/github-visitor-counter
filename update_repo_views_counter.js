@@ -1,5 +1,6 @@
 // Fetches GitHub Traffic API data and updates the visitor count in the README file
 const fs = require('fs');
+const path = require('path');
 const fetch = require('node-fetch');
 const { execSync } = require('child_process');
 
@@ -11,7 +12,6 @@ if (!GITHUB_TOKEN || !REPO) {
   process.exit(1);
 }
 
-const README_FILE = 'README.md';
 const METRICS_FILE = 'metrics.json';
 
 async function getVisitorCount() {
@@ -29,32 +29,51 @@ async function getVisitorCount() {
   }
 
   const data = await res.json();
-  const totalViews = data.count || 0; // Use the accumulated count from the API response
-
-  return totalViews;
+  return data.count || 0;
 }
 
-function updateMetricsFile(count) {
-  const updateDate = new Date().toISOString();
-  fs.writeFileSync(METRICS_FILE, JSON.stringify({ count, lastUpdated: updateDate }, null, 2));
-  console.log(`Metrics updated in ${METRICS_FILE}`);
+function updateMetricsFile(total_views) {
+  const lastUpdated = new Date().toISOString();
+  const metrics = { total_views, lastUpdated };
+  fs.writeFileSync(METRICS_FILE, JSON.stringify(metrics, null, 2));
+  console.log(`metrics.json updated with ${total_views} views`);
 }
 
-function updateReadmeFile(count) {
+function updateMarkdownBadges(total_views) {
   const refreshDate = new Date().toISOString().split('T')[0];
-  const badge = `<div align="center">
-  <img src="https://img.shields.io/badge/Total%20views-${count}-limegreen" alt="Total views">
+  const badgeRegex = /<!-- START BADGE -->[\s\S]*?<!-- END BADGE -->/g;
+  
+  const badgeBlock = `<!-- START BADGE -->
+<div align="center">
+  <img src="https://img.shields.io/badge/Total%20views-${total_views}-limegreen" alt="Total views">
   <p>Refresh Date: ${refreshDate}</p>
-</div>`;
+</div>
+<!-- END BADGE -->`;
 
-  const readme = fs.readFileSync(README_FILE, 'utf-8');
-  const updatedReadme = readme.replace(
-    /<!-- START BADGE -->[\s\S]*?<!-- END BADGE -->/,
-    `<!-- START BADGE -->\n${badge}\n<!-- END BADGE -->`
-  );
+  const markdownFiles = findMarkdownFiles('.');
+  markdownFiles.forEach(file => {
+    let content = fs.readFileSync(file, 'utf-8');
+    if (content.includes('Total%20views') && content.includes('<!-- START BADGE -->') && content.includes('<!-- END BADGE -->')) {
+      const updated = content.replace(badgeRegex, badgeBlock);
+      fs.writeFileSync(file, updated);
+      console.log(`Updated badge in ${file}`);
+    }
+  });
+}
 
-  fs.writeFileSync(README_FILE, updatedReadme);
-  console.log(`README updated with visitor count: ${count}`);
+function findMarkdownFiles(dir) {
+  let results = [];
+  const list = fs.readdirSync(dir);
+  list.forEach(file => {
+    const filePath = path.join(dir, file);
+    const stat = fs.statSync(filePath);
+    if (stat && stat.isDirectory()) {
+      results = results.concat(findMarkdownFiles(filePath));
+    } else if (file.endsWith('.md')) {
+      results.push(filePath);
+    }
+  });
+  return results;
 }
 
 function deleteNodeModules() {
@@ -66,9 +85,9 @@ function deleteNodeModules() {
 
 (async () => {
   try {
-    const count = await getVisitorCount();
-    updateMetricsFile(count);
-    updateReadmeFile(count);
+    const total_views = await getVisitorCount();
+    updateMetricsFile(total_views);
+    updateMarkdownBadges(total_views);
   } catch (err) {
     console.error(err);
     process.exit(1);
