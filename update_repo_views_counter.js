@@ -42,7 +42,7 @@ function updateMetricsFile(total_views) {
 function updateMarkdownBadges(total_views) {
   const refreshDate = new Date().toISOString().split('T')[0];
   const badgeRegex = /<!-- START BADGE -->[\s\S]*?<!-- END BADGE -->/g;
-  
+
   const badgeBlock = `<!-- START BADGE -->
 <div align="center">
   <img src="https://img.shields.io/badge/Total%20views-${total_views}-limegreen" alt="Total views">
@@ -50,13 +50,15 @@ function updateMarkdownBadges(total_views) {
 </div>
 <!-- END BADGE -->`;
 
-  const markdownFiles = findMarkdownFiles('.');
+  const markdownFiles = findMarkdownFiles('.'); // Find all Markdown files in the directory
   markdownFiles.forEach(file => {
     let content = fs.readFileSync(file, 'utf-8');
-    if (badgeRegex.test(content)) {
+    if (badgeRegex.test(content)) {
       const updated = content.replace(badgeRegex, badgeBlock);
       fs.writeFileSync(file, updated);
       console.log(`Updated badge in ${file}`);
+    } else {
+      console.log(`Badge block not found in ${file}`);
     }
   });
 }
@@ -68,9 +70,9 @@ function findMarkdownFiles(dir) {
     const filePath = path.join(dir, file);
     const stat = fs.statSync(filePath);
     if (stat && stat.isDirectory()) {
-      results = results.concat(findMarkdownFiles(filePath));
+      results = results.concat(findMarkdownFiles(filePath)); // Recursively search subdirectories
     } else if (file.endsWith('.md')) {
-      results.push(filePath);
+      results.push(filePath); // Add Markdown files to the results
     }
   });
   return results;
