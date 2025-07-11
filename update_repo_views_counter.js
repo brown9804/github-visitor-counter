@@ -53,7 +53,7 @@ function updateMarkdownBadges(total_views) {
   const markdownFiles = findMarkdownFiles('.');
   markdownFiles.forEach(file => {
     let content = fs.readFileSync(file, 'utf-8');
-    if (content.includes('Total%20views') && content.includes('<!-- START BADGE -->') && content.includes('<!-- END BADGE -->')) {
+    if (badgeRegex.test(content)) {
       const updated = content.replace(badgeRegex, badgeBlock);
       fs.writeFileSync(file, updated);
       console.log(`Updated badge in ${file}`);
