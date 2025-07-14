@@ -14,7 +14,8 @@ if (!GITHUB_TOKEN || !REPO) {
 
 const METRICS_FILE = 'metrics.json';
 
-async function getVisitorCount() {
+// Fetch the last 14 days of traffic data (GitHub API returns up to 14 days)
+async function getLast14DaysTraffic() {
   const res = await fetch(`https://api.github.com/repos/${REPO}/traffic/views`, {
     headers: {
       'Accept': 'application/vnd.github+json',
@@ -29,20 +30,55 @@ async function getVisitorCount() {
   }
 
   const data = await res.json();
-  return data.count || 0;
+  // Each entry contains: timestamp, count, uniques
+  return data.views.map(item => ({
+    date: item.timestamp.slice(0, 10), // Keep only YYYY-MM-DD
+    count: item.count,
+    uniques: item.uniques
+  }));
 }
 
-function updateMetricsFile(total_views) {
-  const lastUpdated = new Date().toISOString();
-  const metrics = { total_views, lastUpdated };
+// Read metrics.json as an array of daily entries (if exists)
+function readMetrics() {
+  if (fs.existsSync(METRICS_FILE)) {
+    const raw = fs.readFileSync(METRICS_FILE, 'utf-8');
+    try {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) return arr;
+    } catch (e) {
+      console.error('metrics.json is not valid JSON. Starting fresh.');
+    }
+  }
+  return [];
+}
+
+// Write the updated metrics array back to metrics.json
+function writeMetrics(metrics) {
   fs.writeFileSync(METRICS_FILE, JSON.stringify(metrics, null, 2));
-  console.log(`metrics.json updated with ${total_views} views`);
+  console.log(`metrics.json updated with ${metrics.length} days`);
 }
 
+// Merge existing and new metrics, using the date as the unique key
+function mergeMetrics(existing, fetched) {
+  // Use an object for fast deduplication by date
+  const byDate = {};
+  existing.forEach(entry => { byDate[entry.date] = entry; });
+  fetched.forEach(entry => { byDate[entry.date] = entry; });
+  // Convert back to array and sort by date ascending
+  return Object.values(byDate).sort((a, b) => a.date.localeCompare(b.date));
+}
+
+// Calculate the sum of all view counts (historical total)
+function calculateTotalViews(metrics) {
+  return metrics.reduce((sum, entry) => sum + entry.count, 0);
+}
+
+// Find and update the badge block in all Markdown files (recursive)
 function updateMarkdownBadges(total_views) {
   const refreshDate = new Date().toISOString().split('T')[0];
   const badgeRegex = /<!-- START BADGE -->[\s\S]*?<!-- END BADGE -->/g;
 
+  // This is your existing badge schema, preserved as requested
   const badgeBlock = `<!-- START BADGE -->
 <div align="center">
   <img src="https://img.shields.io/badge/Total%20views-${total_views}-limegreen" alt="Total views">
@@ -63,6 +99,7 @@ function updateMarkdownBadges(total_views) {
   });
 }
 
+// Recursively find all Markdown files in a directory
 function findMarkdownFiles(dir) {
   let results = [];
   const list = fs.readdirSync(dir);
@@ -78,6 +115,7 @@ function findMarkdownFiles(dir) {
   return results;
 }
 
+// Optionally delete node_modules after running
 function deleteNodeModules() {
   if (fs.existsSync('node_modules')) {
     execSync('rm -rf node_modules', { stdio: 'inherit' });
@@ -85,10 +123,21 @@ function deleteNodeModules() {
   }
 }
 
+// Main async function to orchestrate update
 (async () => {
   try {
-    const total_views = await getVisitorCount();
-    updateMetricsFile(total_views);
+    // Fetch latest 14 days of traffic data
+    const fetched = await getLast14DaysTraffic();
+    // Load existing metrics.json (if present)
+    const existing = readMetrics();
+    // Merge and deduplicate daily metrics
+    const merged = mergeMetrics(existing, fetched);
+    // Save the updated metrics array
+    writeMetrics(merged);
+
+    // Calculate historical total views for badge
+    const total_views = calculateTotalViews(merged);
+    // Update the badge in Markdown files
     updateMarkdownBadges(total_views);
   } catch (err) {
     console.error(err);
