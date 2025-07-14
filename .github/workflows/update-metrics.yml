@@ -27,8 +27,23 @@ jobs:
         with:
           node-version: '20'
 
+      # You only need this if you want to isolate node_modules/npm install
+      # Otherwise, just run the next step in the main directory
+      - name: Run visitor counter logic in temp folder
+        run: |
+          mkdir temp-run
+          cp update_repo_views_counter.js package.json package-lock.json temp-run/
+          cd temp-run
+          npm ci
+          node update_repo_views_counter.js
+          cd ..
+          rm -rf temp-run
+        env:
+          TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
+          REPO: ${{ github.repository }}
+
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Update visitor count
         run: node update_repo_views_counter.js
@@ -41,37 +56,38 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
+      # For PRs: update the PR branch
       - name: Commit and push to PR branch
         if: github.event_name == 'pull_request'
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git fetch origin
-          git checkout -b ${{ github.event.pull_request.head.ref }} origin/${{ github.event.pull_request.head.ref }}
+          git checkout ${{ github.event.pull_request.head.ref }}
           git add -A
           git commit -m "Update visitor count" || echo "No changes to commit"
           git remote set-url origin https://x-access-token:${TOKEN}@github.com/${{ github.repository }}
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
 
-      - name: Commit and push to new branch (non-PR)
-        if: github.event_name == 'pull_request'
+      # For non-PRs (scheduled/manual): push to a dedicated temp branch and create a PR
+      - name: Commit and push to temp branch
+        if: github.event_name != 'pull_request'
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git fetch origin
-          git checkout ${{ github.event.pull_request.head.ref }} || git checkout -b ${{ github.event.pull_request.head.ref }} origin/${{ github.event.pull_request.head.ref }}
+          BRANCH="visitor-counter-update-${{ github.run_id }}"
+          git checkout -b $BRANCH
           git add -A
           git commit -m "Update visitor count" || echo "No changes to commit"
           git remote set-url origin https://x-access-token:${TOKEN}@github.com/${{ github.repository }}
-          git pull --rebase origin ${{ github.event.pull_request.head.ref }} || echo "No rebase needed"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          git push origin HEAD:$BRANCH
 
       - name: Create Pull Request (non-PR)
         if: github.event_name != 'pull_request'
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ steps.push.outputs.branch }}
+          branch: visitor-counter-update-${{ github.run_id }}
           title: "Update visitor count"
           body: "Automated update of visitor count"
           base: main
