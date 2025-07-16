@@ -12,6 +12,9 @@ Last updated: 2025-07-10
 
 > This repository provides a customizable GitHub visitor counter that tracks and displays the number of visits to your GitHub profile or repository. The counter updates daily using the GitHub Traffic API and writes the total views directly into the README file.
 
+> [!IMPORTANT]
+> The GitHub Traffic API only provides traffic data for the last 14 days. This project is designed to persist and aggregate daily view counts, allowing you to maintain a historical visitor total beyond GitHub's 14-day window.
+
 ## Features
 
 - **Daily-updated visitor counting**: Fetches real visitor data from the GitHub Traffic API.
@@ -151,7 +154,7 @@ Last updated: 2025-07-10
 
 <!-- START BADGE -->
 <div align="center">
-  <img src="https://img.shields.io/badge/Total%20views-1152-limegreen" alt="Total views">
-  <p>Refresh Date: 2025-07-14</p>
+  <img src="https://img.shields.io/badge/Total%20views-1280-limegreen" alt="Total views">
+  <p>Refresh Date: 2025-07-16</p>
 </div>
 <!-- END BADGE -->
